@@ -104,7 +104,7 @@ $stok_sedikit = $stok_sedikit_row['low_stock'];
                                     </a>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <a href="edit_produk.php" class="btn">
+                                    <a href="produk.php" class="btn">
                                         <span class="icon text-primary">
                                             <i class="fas fa-edit" style="font-size:50px;"></i><br>
                                         </span>
@@ -112,7 +112,7 @@ $stok_sedikit = $stok_sedikit_row['low_stock'];
                                     </a>
                                 </div>
                                 <div class="col-4 text-center">
-                                    <a href="hapus_produk.php" class="btn">
+                                    <a href="produk.php" class="btn">
                                         <span class="icon text-primary">
                                             <i class="fas fa-trash" style="font-size:50px;"></i><br>
                                         </span>
@@ -135,7 +135,7 @@ $stok_sedikit = $stok_sedikit_row['low_stock'];
                                 Transaksi Penjualan</div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-4 text-center">
-                                    <a href="tambah_produk.php" class="btn">
+                                    <a href="transaksi.php" class="btn">
                                         <span class="icon text-primary">
                                             <i class="fas fa-shopping-cart " style="font-size:50px;"></i><br>
                                         </span>
