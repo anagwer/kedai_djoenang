@@ -1,6 +1,20 @@
 <?php
-
 include_once('dbcon.php');
+
+// Handle Image Upload
+function handleImageUpload($fileInputName) {
+    if (isset($_FILES[$fileInputName]) && $_FILES[$fileInputName]['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'upload/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $fileName = basename($_FILES[$fileInputName]['name']);
+        $filePath = $uploadDir . $fileName;
+        move_uploaded_file($_FILES[$fileInputName]['tmp_name'], $filePath);
+        return $fileName; // Return only the file name to save in the database
+    }
+    return null; // No file uploaded
+}
 
 // Simpan Tambah
 if (isset($_POST['save'])) {
@@ -8,8 +22,9 @@ if (isset($_POST['save'])) {
     $harga = $_POST['harga'];
     $kategori = $_POST['kategori'];
     $stok = $_POST['jumlah_stok'];
+    $gambar = handleImageUpload('gambar'); // Handle image upload
 
-    $conn->query("INSERT INTO produk (Nama_Produk, Harga, Kategori) VALUES ('$nama', '$harga', '$kategori')");
+    $conn->query("INSERT INTO produk (Nama_Produk, Harga, Kategori, Gambar) VALUES ('$nama', '$harga', '$kategori', '$gambar')");
     $last_id = $conn->insert_id;
     $conn->query("INSERT INTO stok_barang (ID_Produk, Jumlah_Stok) VALUES ('$last_id', '$stok')");
     echo "<script>location.href='produk.php';</script>";
@@ -22,8 +37,16 @@ if (isset($_POST['update'])) {
     $harga = $_POST['harga'];
     $kategori = $_POST['kategori'];
     $stok = $_POST['jumlah_stok'];
+    $gambar = handleImageUpload('gambar'); // Handle image upload
 
-    $conn->query("UPDATE produk SET Nama_Produk='$nama', Harga='$harga', Kategori='$kategori' WHERE ID_Produk='$id'");
+    if ($gambar) {
+        // If a new image is uploaded, update the database with the new file name
+        $conn->query("UPDATE produk SET Nama_Produk='$nama', Harga='$harga', Kategori='$kategori', Gambar='$gambar' WHERE ID_Produk='$id'");
+    } else {
+        // If no new image is uploaded, keep the existing image
+        $conn->query("UPDATE produk SET Nama_Produk='$nama', Harga='$harga', Kategori='$kategori' WHERE ID_Produk='$id'");
+    }
+
     $conn->query("UPDATE stok_barang SET Jumlah_Stok='$stok', Tanggal_Update=NOW() WHERE ID_Produk='$id'");
     echo "<script>location.href='produk.php';</script>";
 }
@@ -50,6 +73,7 @@ if (isset($_GET['delete'])) {
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Gambar</th>
                             <th>Nama</th>
                             <th>Harga</th>
                             <th>Kategori</th>
@@ -65,9 +89,11 @@ if (isset($_GET['delete'])) {
                         ?>
                         <tr>
                             <td><?= $no++; ?></td>
+                            <td class="text-center"><img src="upload/<?= $row['Gambar']; ?>" alt="<?= $row['Nama_Produk']; ?>" style="width: 150px;"></td>
                             <td><?= $row['Nama_Produk']; ?></td>
                             <td>Rp <?= number_format($row['Harga'], 0, ',', '.'); ?></td>
                             <td><?= $row['Kategori']; ?></td>
+                            
                             <td>
                               <span class="badge 
                                   <?= $row['Jumlah_Stok'] == 0 ? 'badge-danger' : ($row['Jumlah_Stok'] < 4 ? 'badge-warning' : 'badge-success'); ?>">
@@ -85,7 +111,7 @@ if (isset($_GET['delete'])) {
                         <div class="modal fade" id="editModal<?= $row['ID_Produk']; ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel<?= $row['ID_Produk']; ?>" aria-hidden="true">
                           <div class="modal-dialog modal-dialog-centered" role="document">
                               <div class="modal-content">
-                                  <form method="post">
+                                  <form method="post" enctype="multipart/form-data">
                                       <div class="modal-header">
                                           <h5 class="modal-title" id="editModalLabel<?= $row['ID_Produk']; ?>">Edit Produk</h5>
                                           <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
@@ -112,6 +138,11 @@ if (isset($_GET['delete'])) {
                                               <label>Jumlah Stok</label>
                                               <input type="number" class="form-control" name="jumlah_stok" value="<?= $row['Jumlah_Stok']; ?>" required>
                                           </div>
+                                          <div class="form-group">
+                                              <label>Gambar</label>
+                                              <input type="file" class="form-control-file" name="gambar">
+                                              <small class="text-muted">Biarkan kosong jika tidak ingin mengganti gambar.</small>
+                                          </div>
                                       </div>
                                       <div class="modal-footer">
                                           <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -133,7 +164,7 @@ if (isset($_GET['delete'])) {
 <!-- Modal Tambah -->
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog">
-        <form method="post" class="modal-content">
+        <form method="post" class="modal-content" enctype="multipart/form-data">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Produk</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
@@ -158,6 +189,10 @@ if (isset($_GET['delete'])) {
                 <div class="form-group">
                     <label>Jumlah Stok</label>
                     <input type="number" class="form-control" name="jumlah_stok" required>
+                </div>
+                <div class="form-group">
+                    <label>Gambar</label>
+                    <input type="file" class="form-control-file" name="gambar" required>
                 </div>
             </div>
             <div class="modal-footer">

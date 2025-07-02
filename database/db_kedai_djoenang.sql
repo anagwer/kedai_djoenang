@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2025 at 10:39 AM
+-- Generation Time: Jul 02, 2025 at 01:40 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 7.4.29
 
@@ -89,16 +89,17 @@ CREATE TABLE `produk` (
   `ID_Produk` int(50) NOT NULL,
   `Nama_Produk` varchar(255) NOT NULL,
   `Harga` int(11) NOT NULL,
-  `Kategori` varchar(100) DEFAULT NULL
+  `Kategori` varchar(100) DEFAULT NULL,
+  `Gambar` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `produk`
 --
 
-INSERT INTO `produk` (`ID_Produk`, `Nama_Produk`, `Harga`, `Kategori`) VALUES
-(2, 'Kopi susu gula aren', 24000, 'Minuman'),
-(3, 'croissant', 8000, 'Minuman');
+INSERT INTO `produk` (`ID_Produk`, `Nama_Produk`, `Harga`, `Kategori`, `Gambar`) VALUES
+(2, 'Kopi susu gula aren', 24000, 'Minuman', 'Croissants-article.webp'),
+(3, 'croissant', 8000, 'Minuman', 'Kopi_Susu_Gula_Aren_Ice1.png');
 
 -- --------------------------------------------------------
 
@@ -118,7 +119,7 @@ CREATE TABLE `stok_barang` (
 
 INSERT INTO `stok_barang` (`ID_Produk`, `Jumlah_Stok`, `Tanggal_Update`) VALUES
 (2, 4, '2025-07-02'),
-(3, 8, '0000-00-00');
+(3, 8, '2025-07-02');
 
 -- --------------------------------------------------------
 
